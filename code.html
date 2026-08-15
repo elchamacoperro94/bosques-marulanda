@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Guardianes del Páramo - Restauración Técnica</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600&amp;family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Leaflet CSS -->
+<link crossorigin="" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" rel="stylesheet"/>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-bright": "#333b36",
+                        "on-primary-container": "#00563b",
+                        "surface-tint": "#45dfa4",
+                        "primary-fixed-dim": "#45dfa4",
+                        "primary": "#5af0b3",
+                        "surface-dim": "#0e1511",
+                        "on-tertiary-fixed": "#311300",
+                        "on-background": "#dde4dd",
+                        "primary-fixed": "#68fcbf",
+                        "secondary": "#ffc640",
+                        "on-tertiary-fixed-variant": "#723600",
+                        "on-surface-variant": "#bbcac0",
+                        "on-primary": "#003825",
+                        "surface-container-high": "#242c27",
+                        "tertiary-fixed-dim": "#ffb787",
+                        "on-secondary": "#402d00",
+                        "on-secondary-fixed-variant": "#5c4300",
+                        "surface-container": "#1a211d",
+                        "outline-variant": "#3c4a42",
+                        "on-error-container": "#ffdad6",
+                        "on-error": "#690005",
+                        "on-secondary-fixed": "#261a00",
+                        "on-primary-fixed-variant": "#005137",
+                        "inverse-primary": "#006c4b",
+                        "surface": "#0e1511",
+                        "secondary-container": "#e3aa00",
+                        "background": "#0e1511",
+                        "inverse-surface": "#dde4dd",
+                        "surface-container-low": "#161d19",
+                        "on-primary-fixed": "#002114",
+                        "primary-container": "#34d399",
+                        "tertiary": "#ffccad",
+                        "outline": "#85948b",
+                        "secondary-fixed": "#ffdf9f",
+                        "on-surface": "#dde4dd",
+                        "on-tertiary": "#502400",
+                        "surface-container-lowest": "#09100c",
+                        "tertiary-fixed": "#ffdcc7",
+                        "surface-container-highest": "#2f3632",
+                        "tertiary-container": "#ffa668",
+                        "secondary-fixed-dim": "#f9bd22",
+                        "on-secondary-container": "#5a4100",
+                        "inverse-on-surface": "#2b322e",
+                        "error-container": "#93000a",
+                        "surface-variant": "#2f3632",
+                        "on-tertiary-container": "#783901",
+                        "error": "#ffb4ab"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "base": "8px",
+                        "gutter": "24px",
+                        "container-max": "1280px",
+                        "margin-desktop": "64px",
+                        "margin-mobile": "16px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Outfit", "sans-serif"],
+                        "technical-data": ["Space Mono", "monospace"],
+                        "technical-label": ["Space Mono", "monospace"],
+                        "headline-lg-mobile": ["Outfit", "sans-serif"],
+                        "headline-lg": ["Outfit", "sans-serif"],
+                        "body-md": ["Plus Jakarta Sans", "sans-serif"],
+                        "body-sm": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["56px", { "lineHeight": "64px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "technical-data": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "technical-label": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #060a15;
+            color: #dde4dd;
+            overflow-x: hidden;
+        }
+        
+        .glass-panel {
+            background-color: #0c122299;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .emerald-glow {
+            box-shadow: 0px 10px 30px rgba(52, 211, 153, 0.15);
+        }
+
+        .text-gradient-gold {
+            background: linear-gradient(90deg, #fbbf24 0%, #f59e0b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #060a15; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1a211d; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3c4a42; 
+        }
+
+        /* Motion Design Styles */
+        .gsap-reveal { opacity: 0; visibility: hidden; }
+        .word-wrap { display: inline-block; overflow: hidden; vertical-align: top; }
+        .word-inner { display: inline-block; transform: translateY(100%); }
+        
+        .btn-premium {
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.3s ease;
+        }
+        .btn-premium::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        .btn-premium:hover {
+            transform: translateY(-2px);
+            box-shadow: 0px 15px 35px rgba(52, 211, 153, 0.25);
+        }
+        .btn-premium:hover::after {
+            left: 100%;
+        }
+        
+        .link-underline {
+            position: relative;
+        }
+        .link-underline::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -2px;
+            left: 50%;
+            background-color: currentColor;
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+        .link-underline:hover::after, .link-underline.active::after {
+            width: 100%;
+        }
+        
+        .title-underline-reveal {
+            position: relative;
+            display: inline-block;
+        }
+        .title-underline-reveal::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #34d399;
+            transform: scaleX(0);
+            transform-origin: left;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-primary selection:text-on-primary">
+<!-- Preloader -->
+<div class="fixed inset-0 z-[100] bg-[#060a15] flex flex-col items-center justify-center transition-opacity duration-700" id="preloader">
+<div class="w-4 h-4 rounded-full bg-primary animate-ping mb-6"></div>
+<div class="w-48 h-[1px] bg-white/10 relative overflow-hidden">
+<div class="absolute top-0 left-0 h-full w-0 bg-primary" id="preloader-bar"></div>
+</div>
+</div>
+<!-- Scroll Progress Bar -->
+<div class="fixed top-0 left-0 h-[2px] bg-primary z-[60] origin-left scale-x-0 w-full shadow-[0_0_10px_rgba(52,211,153,0.5)]" id="scroll-progress"></div>
+<!-- Film Grain Atmosphere -->
+<div class="fixed inset-0 z-50 pointer-events-none opacity-[0.04] mix-blend-overlay" style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.8%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E');"></div>
+<!-- Top Navigation Bar -->
+<nav class="fixed top-0 w-full z-50 bg-[#0c122299] backdrop-blur-md border-b border-white/10 shadow-[0px_10px_30px_rgba(52,211,153,0.15)] transition-all duration-300" id="navbar">
+<div class="flex justify-between items-center h-20 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto transition-all duration-300" id="navbar-inner">
+<div class="font-display-lg text-headline-lg-mobile md:text-headline-lg font-bold text-on-surface gsap-nav-item">
+                Guardianes del Páramo
+            </div>
+<div class="hidden md:flex items-center gap-8 font-technical-label text-technical-label gsap-nav-item">
+<a class="text-primary link-underline active pb-1" href="#inicio">Inicio</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors link-underline pb-1" href="#geovisor">Geovisor</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors link-underline pb-1" href="#inventario">Inventario</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors link-underline pb-1" href="#impacto">Impacto</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors link-underline pb-1" href="#trazabilidad">Trazabilidad</a>
+</div>
+<button class="hidden md:flex bg-primary text-on-primary font-technical-label text-technical-label px-6 py-3 rounded btn-premium emerald-glow gsap-nav-item">
+                Unirse a la Restauración
+            </button>
+<button class="md:hidden text-on-surface-variant gsap-nav-item">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">menu</span>
+</button>
+</div>
+</nav>
+<!-- Side Navigation Bar -->
+<nav class="hidden xl:flex fixed right-6 top-1/2 -translate-y-1/2 rounded-full py-6 bg-[#0c122299] backdrop-blur-xl border border-white/10 shadow-lg z-40 flex-col items-center px-3 gap-4 gsap-sidenav">
+<a class="group relative flex items-center justify-center p-2 bg-primary text-on-primary rounded-full hover:scale-110 transition-transform" href="#inicio">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="absolute right-full mr-4 bg-surface-container-high text-on-surface text-technical-label px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none border border-white/10">Inicio</span>
+</a>
+<a class="group relative flex items-center justify-center p-2 text-on-surface-variant hover:text-primary transition-all rounded-full hover:scale-110" href="#geovisor">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">public</span>
+<span class="absolute right-full mr-4 bg-surface-container-high text-on-surface text-technical-label px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none border border-white/10">Mapa de Calor</span>
+</a>
+<a class="group relative flex items-center justify-center p-2 text-on-surface-variant hover:text-primary transition-all rounded-full hover:scale-110" href="#inventario">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">psychology_alt</span>
+<span class="absolute right-full mr-4 bg-surface-container-high text-on-surface text-technical-label px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none border border-white/10">Especies</span>
+</a>
+<a class="group relative flex items-center justify-center p-2 text-on-surface-variant hover:text-primary transition-all rounded-full hover:scale-110" href="#impacto">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">monitoring</span>
+<span class="absolute right-full mr-4 bg-surface-container-high text-on-surface text-technical-label px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none border border-white/10">Métricas</span>
+</a>
+<a class="group relative flex items-center justify-center p-2 text-on-surface-variant hover:text-primary transition-all rounded-full hover:scale-110" href="#trazabilidad">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">handshake</span>
+<span class="absolute right-full mr-4 bg-surface-container-high text-on-surface text-technical-label px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none border border-white/10">Alianzas</span>
+</a>
+</nav>
+<!-- Main Content -->
+<main class="pt-24 pb-20">
+<!-- Hero Section -->
+<section class="min-h-[90vh] flex flex-col justify-center px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto relative overflow-hidden" id="inicio">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center z-10">
+<div class="space-y-8">
+<h1 class="font-display-lg text-display-lg text-gradient-gold" id="hero-title">
+<span class="word-wrap"><span class="word-inner">Restauración</span></span>
+<span class="word-wrap"><span class="word-inner">Técnica</span></span>
+<span class="word-wrap"><span class="word-inner">del</span></span>
+<span class="word-wrap"><span class="word-inner">Páramo</span></span>
+<span class="word-wrap"><span class="word-inner">Andino</span></span>
+</h1>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-xl gsap-hero-el">
+                        Un enfoque científico y trazable para la recuperación de ecosistemas de alta montaña, asegurando la seguridad hídrica a través de tecnología blockchain y monitoreo satelital.
+                    </p>
+<div class="flex flex-wrap gap-4 gsap-hero-el">
+<button class="bg-primary text-on-primary font-technical-label text-technical-label px-6 py-3 rounded btn-premium emerald-glow">
+                            Explorar Datos
+                        </button>
+<button class="bg-transparent border border-primary text-primary font-technical-label text-technical-label px-6 py-3 rounded hover:bg-primary/10 transition-colors btn-premium">
+                            Ver Metodología
+                        </button>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<!-- Stats Cards -->
+<div class="glass-panel p-6 rounded-lg emerald-glow gsap-hero-card tilt-card" data-tilt="" data-tilt-glare="" data-tilt-max="5" data-tilt-max-glare="0.1" data-tilt-speed="400">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 0;">nature</span>
+<span class="font-technical-label text-technical-label text-on-surface-variant uppercase">Frailejones Plantados</span>
+</div>
+<div class="font-display-lg text-headline-lg text-on-surface count-up" data-target="12450">0</div>
+</div>
+<div class="glass-panel p-6 rounded-lg gsap-hero-card tilt-card" data-tilt="" data-tilt-max="5" data-tilt-speed="400">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 0;">landscape</span>
+<span class="font-technical-label text-technical-label text-on-surface-variant uppercase">Hectáreas Protegidas</span>
+</div>
+<div class="font-display-lg text-headline-lg text-on-surface count-up" data-target="540">0</div>
+</div>
+<div class="glass-panel p-6 rounded-lg col-span-2 flex justify-between items-center gsap-hero-card tilt-card" data-tilt="" data-tilt-max="3" data-tilt-speed="400">
+<div>
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 0;">trending_up</span>
+<span class="font-technical-label text-technical-label text-on-surface-variant uppercase">Ejecución del Proyecto</span>
+</div>
+<div class="font-display-lg text-headline-lg text-on-surface"><span class="count-up" data-target="85">0</span>%</div>
+</div>
+<div class="w-1/2 bg-surface-container-high h-2 rounded-full overflow-hidden relative">
+<div class="bg-primary h-full w-0 rounded-full" id="progress-bar-hero"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Atmospheric Background Element -->
+<div class="absolute top-0 right-0 w-full h-full overflow-hidden -z-10 pointer-events-none opacity-40">
+<div class="parallax-orb absolute top-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-primary/20 blur-[120px]"></div>
+<div class="parallax-orb absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-secondary/10 blur-[120px]"></div>
+</div>
+</section>
+<!-- Geovisor Section -->
+<section class="py-20 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto scroll-reveal" id="geovisor">
+<div class="mb-12">
+<h2 class="font-display-lg text-headline-lg text-on-surface mb-4 title-underline-reveal inline-block">Geovisor de Restauración</h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl mt-4">
+                    Monitoreo en tiempo real de lotes de intervención. Utilizamos datos satelitales de alta resolución para verificar el crecimiento y estado de las especies plantadas.
+                </p>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[600px]">
+<!-- Map Container -->
+<div class="lg:col-span-2 glass-panel rounded-xl overflow-hidden relative border border-white/10 emerald-glow">
+<div class="w-full h-full z-0" id="map"></div>
+<!-- Overlay UI on Map -->
+<div class="absolute top-4 left-4 z-10 glass-panel rounded p-2 flex gap-2 map-controls gsap-reveal">
+<button class="bg-surface-container-high hover:bg-surface-variant text-on-surface p-2 rounded transition-colors" title="Capa Base">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">layers</span>
+</button>
+<button class="bg-primary/20 text-primary border border-primary/50 p-2 rounded transition-colors" title="Alerta Temprana">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">warning</span>
+</button>
+</div>
+</div>
+<!-- Info Panel -->
+<div class="glass-panel rounded-xl flex flex-col overflow-hidden border border-white/10 tilt-card" data-tilt="" data-tilt-max="2" data-tilt-speed="400">
+<div class="flex border-b border-white/10">
+<button class="flex-1 py-4 font-technical-label text-technical-label text-primary border-b-2 border-primary bg-primary/5">Detalle de Lote</button>
+<button class="flex-1 py-4 font-technical-label text-technical-label text-on-surface-variant hover:bg-surface-container-high transition-colors">Buscador</button>
+</div>
+<div class="p-6 flex-1 overflow-y-auto">
+<div class="space-y-6">
+<div>
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-1">Lote Alpha-01</h3>
+<div class="inline-flex items-center gap-1 bg-primary/10 text-primary px-2 py-1 rounded-full font-technical-label text-[10px]">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                                    Monitoreo Activo
+                                </div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<div class="font-technical-label text-technical-label text-on-surface-variant">Elevación</div>
+<div class="font-technical-data text-technical-data text-on-surface">3,250 m s.n.m.</div>
+</div>
+<div>
+<div class="font-technical-label text-technical-label text-on-surface-variant">Área</div>
+<div class="font-technical-data text-technical-data text-on-surface">12.5 ha</div>
+</div>
+<div>
+<div class="font-technical-label text-technical-label text-on-surface-variant">Especies</div>
+<div class="font-technical-data text-technical-data text-on-surface">Espeletia spp.</div>
+</div>
+<div>
+<div class="font-technical-label text-technical-label text-on-surface-variant">Supervivencia</div>
+<div class="font-technical-data text-technical-data text-primary">92%</div>
+</div>
+</div>
+<div class="pt-4 border-t border-white/10">
+<div class="font-technical-label text-technical-label text-on-surface-variant mb-2">Última Actualización Satelital</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 0;">satellite_alt</span>
+<span class="font-technical-data text-technical-data text-on-surface">Hace 12 horas</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Inventario Section -->
+<section class="py-20 px-margin-mobile md:px-margin-desktop bg-surface-container-lowest scroll-reveal" id="inventario">
+<div class="max-w-container-max mx-auto">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6">
+<div>
+<h2 class="font-display-lg text-headline-lg text-on-surface mb-4 title-underline-reveal inline-block">Inventario Fitosanitario</h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl mt-4">
+                            Registro detallado de individuos clave, evaluando su desarrollo fenológico y adaptabilidad al microclima restaurado.
+                        </p>
+</div>
+<div class="flex gap-2">
+<button class="bg-surface-container-high text-on-surface font-technical-label text-technical-label px-4 py-2 rounded border border-white/10 hover:bg-surface-variant transition-colors btn-premium">Filtrar</button>
+<button class="bg-surface-container-high text-on-surface font-technical-label text-technical-label px-4 py-2 rounded border border-white/10 hover:bg-surface-variant transition-colors btn-premium">Exportar CSV</button>
+</div>
+</div>
+<!-- Bento Grid for Inventory -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+<!-- Item 1 -->
+<div class="glass-panel rounded-xl overflow-hidden group hover:border-primary/50 transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_10px_30px_rgba(52,211,153,0.1)] tilt-card inv-card" data-tilt="" data-tilt-max="5" data-tilt-speed="400">
+<div class="h-48 overflow-hidden relative">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="A detailed macro photograph of a healthy Espeletia grandiflora (frailejon) leaf showing its characteristic silvery, hairy texture. The lighting is soft, overcast natural mountain light, highlighting the intricate details of the plant's adaptation to cold environments. The background is a blurred, muted green paramo landscape." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBjjf9rpkHqWvgp-dhqVSO5xrvvSv-2vz56pv-mNXNiNNc1CKHpngqPJ0-3AK7Vhzpz188caUoXysEu54903LNVj_XwhAyO3z63OY7F2UiXAk868twOZZMgMbNhET1DXVLfDFCiw2TZPGawdZnXAWSV_SayZGnJFeWMOedbl2sMcu4eEd0oXzUBgQizdjgNIXHhgEZQuUTQHoHaVIJEiPn21tnigxgVsjm_XJDjVTJQQG7WiOf53w"/>
+<div class="absolute top-2 right-2 bg-[#060a15]/80 backdrop-blur text-primary font-technical-label text-[10px] px-2 py-1 rounded border border-primary/30">ID: ESP-G-4092</div>
+</div>
+<div class="p-6">
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-2 italic">Espeletia grandiflora</h3>
+<div class="space-y-3 mb-4">
+<div class="flex justify-between border-b border-white/5 pb-1">
+<span class="font-technical-label text-technical-label text-on-surface-variant">Coord</span>
+<span class="font-technical-data text-technical-data text-on-surface">4.7110° N, 74.0721° W</span>
+</div>
+<div class="flex justify-between border-b border-white/5 pb-1">
+<span class="font-technical-label text-technical-label text-on-surface-variant">Altura</span>
+<span class="font-technical-data text-technical-data text-on-surface">45 cm</span>
+</div>
+<div class="flex justify-between border-b border-white/5 pb-1">
+<span class="font-technical-label text-technical-label text-on-surface-variant">Estado</span>
+<span class="font-technical-data text-technical-data text-primary">Óptimo</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="glass-panel rounded-xl overflow-hidden group hover:border-secondary/50 transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_10px_30px_rgba(255,198,64,0.1)] tilt-card inv-card" data-tilt="" data-tilt-max="5" data-tilt-speed="400">
+<div class="h-48 overflow-hidden relative">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBM_j2wVPppYhxzjCtMd4ATcsyU73RzPTKdd8JH3E7suiRzrUXWiSazUTchy2BhJe_xDp_rXKxNuGfePfFzkZmiJ7PPpeDSYAE9oq8OPXf-UXDrUmgTYgftsMyKNThA4JCRDqanTo7OJrSl85K8h1WTM_s4K55CnnMYfv5q8QoS24TDSuTN6OTygQEqKwQE7AmE_qanP-hYo6w6X6KfNzeKhe-O2UiK2-L0aCrSGVDviwi4sCSXLlsaw0kswuQ0OQs"/>
+<div class="absolute top-2 right-2 bg-[#060a15]/80 backdrop-blur text-secondary font-technical-label text-[10px] px-2 py-1 rounded border border-secondary/30">ID: ESP-A-1104</div>
+</div>
+<div class="p-6">
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-2 italic">Espeletia argentea</h3>
+<div class="space-y-3 mb-4">
+<div class="flex justify-between border-b border-white/5 pb-1">
+<span class="font-technical-label text-technical-label text-on-surface-variant">Coord</span>
+<span class="font-technical-data text-technical-data text-on-surface">4.7125° N, 74.0718° W</span>
+</div>
+<div class="flex justify-between border-b border-white/5 pb-1">
+<span class="font-technical-label text-technical-label text-on-surface-variant">Altura</span>
+<span class="font-technical-data text-technical-data text-on-surface">32 cm</span>
+</div>
+<div class="flex justify-between border-b border-white/5 pb-1">
+<span class="font-technical-label text-technical-label text-on-surface-variant">Estado</span>
+<span class="font-technical-data text-technical-data text-secondary">Observación</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Item 3 -->
+<div class="glass-panel rounded-xl overflow-hidden group hover:border-primary/50 transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_10px_30px_rgba(52,211,153,0.1)] tilt-card inv-card" data-tilt="" data-tilt-max="5" data-tilt-speed="400">
+<div class="h-48 overflow-hidden relative">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAQbGq1HHyqsHnEiyw6Zy708HsLa92OT7W7NKgbOa99VuaxFJtiAckMgye_nPHsKgFpDatG5b633Jij4xpMSFImghzqQzL4RUBLFPUp6ksDt8MDpO2vQmrKxK6J24rtaRPcwP66Bsilp7WuGpDlubi1p69WUVor2uRV2-V_Lcrhq0cFfOq4HbZYB3acDn2odchMD7dp873BscopDhLVBXS7MhAm4_sKGnJ6_wdpAUVv4ruI0_Hyy2NKZ9RhRLtP2sM"/>
+<div class="absolute top-2 right-2 bg-[#060a15]/80 backdrop-blur text-primary font-technical-label text-[10px] px-2 py-1 rounded border border-primary/30">ID: ESP-U-8821</div>
+</div>
+<div class="p-6">
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-2 italic">Espeletia uribei</h3>
+<div class="space-y-3 mb-4">
+<div class="flex justify-between border-b border-white/5 pb-1">
+<span class="font-technical-label text-technical-label text-on-surface-variant">Coord</span>
+<span class="font-technical-data text-technical-data text-on-surface">4.7105° N, 74.0730° W</span>
+</div>
+<div class="flex justify-between border-b border-white/5 pb-1">
+<span class="font-technical-label text-technical-label text-on-surface-variant">Altura</span>
+<span class="font-technical-data text-technical-data text-on-surface">68 cm</span>
+</div>
+<div class="flex justify-between border-b border-white/5 pb-1">
+<span class="font-technical-label text-technical-label text-on-surface-variant">Estado</span>
+<span class="font-technical-data text-technical-data text-primary">Óptimo</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Trazabilidad Section -->
+<section class="py-20 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto scroll-reveal" id="trazabilidad">
+<div class="mb-12 text-center md:text-left">
+<h2 class="font-display-lg text-headline-lg text-on-surface mb-4 title-underline-reveal inline-block">Trazabilidad Inmutable</h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl mx-auto md:mx-0 mt-4">
+                    Cada hito de restauración es registrado en la blockchain de Avalanche, garantizando transparencia absoluta en la ejecución de fondos y supervivencia de especies.
+                </p>
+</div>
+<div class="glass-panel rounded-xl border border-white/10 overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-high/50 border-b border-white/10 font-technical-label text-technical-label text-on-surface-variant">
+<th class="p-4 font-medium">Lote ID</th>
+<th class="p-4 font-medium">Evento</th>
+<th class="p-4 font-medium">Fecha</th>
+<th class="p-4 font-medium">Hash Transacción (SHA-256)</th>
+<th class="p-4 font-medium text-right">Verificador</th>
+</tr>
+</thead>
+<tbody class="font-technical-data text-technical-data text-on-surface">
+<tr class="table-row-reveal border-b border-white/5 hover:bg-white/5 transition-colors">
+<td class="p-4">L-042</td>
+<td class="p-4"><span class="inline-flex items-center gap-1 text-primary"><span class="w-2 h-2 rounded-full bg-primary"></span>Plantación</span></td>
+<td class="p-4 text-on-surface-variant">2023-10-15</td>
+<td class="p-4 text-xs tracking-tighter text-on-surface-variant hover:text-primary cursor-pointer transition-colors">0x8f2a...c91b42d7e</td>
+<td class="p-4 text-right"><a class="text-secondary hover:underline" href="#">Snowtrace ↗</a></td>
+</tr>
+<tr class="table-row-reveal border-b border-white/5 hover:bg-white/5 transition-colors">
+<td class="p-4">L-042</td>
+<td class="p-4"><span class="inline-flex items-center gap-1 text-secondary"><span class="w-2 h-2 rounded-full bg-secondary"></span>Censo T1</span></td>
+<td class="p-4 text-on-surface-variant">2024-04-20</td>
+<td class="p-4 text-xs tracking-tighter text-on-surface-variant hover:text-primary cursor-pointer transition-colors">0x3b91...f22a10c94</td>
+<td class="p-4 text-right"><a class="text-secondary hover:underline" href="#">Snowtrace ↗</a></td>
+</tr>
+<tr class="table-row-reveal hover:bg-white/5 transition-colors">
+<td class="p-4">L-018</td>
+<td class="p-4"><span class="inline-flex items-center gap-1 text-primary"><span class="w-2 h-2 rounded-full bg-primary"></span>Plantación</span></td>
+<td class="p-4 text-on-surface-variant">2024-05-02</td>
+<td class="p-4 text-xs tracking-tighter text-on-surface-variant hover:text-primary cursor-pointer transition-colors">0x1a7f...e84b55a12</td>
+<td class="p-4 text-right"><a class="text-secondary hover:underline" href="#">Snowtrace ↗</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-dim border-t border-outline-variant w-full relative bottom-0 scroll-reveal">
+<div class="max-w-container-max mx-auto w-full flex flex-col md:flex-row justify-between items-start md:items-center py-gutter px-margin-mobile md:px-margin-desktop gap-8">
+<div class="font-display-lg text-headline-lg text-on-surface">
+                Guardianes
+            </div>
+<div class="flex flex-wrap gap-6 font-body-sm text-body-sm text-on-surface-variant">
+<a class="hover:text-secondary transition-colors link-underline" href="#">Privacidad</a>
+<a class="hover:text-secondary transition-colors link-underline" href="#">Términos</a>
+<a class="hover:text-secondary transition-colors link-underline" href="#">Transparencia</a>
+<a class="hover:text-secondary transition-colors link-underline" href="#">Contacto</a>
+</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant opacity-70">
+                © 2024 Guardianes del Páramo. Todos los derechos reservados.
+            </div>
+</div>
+</footer>
+<!-- Scripts for Interactivity & Motion -->
+<script crossorigin="" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<!-- GSAP Core & Plugins -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<!-- Vanilla Tilt for 3D effect -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js"></script>
+<script>
+        // Check for prefers-reduced-motion
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        
+        // Initialize GSAP ScrollTrigger
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Preloader Logic
+        window.addEventListener('load', () => {
+            if(!prefersReducedMotion) {
+                const tlPreload = gsap.timeline();
+                tlPreload.to('#preloader-bar', { width: '100%', duration: 1, ease: 'power2.inOut' })
+                         .to('#preloader', { opacity: 0, duration: 0.5, onComplete: () => {
+                             document.getElementById('preloader').style.display = 'none';
+                             initHeroAnimations();
+                         }}, '+=0.2');
+            } else {
+                document.getElementById('preloader').style.display = 'none';
+            }
+        });
+
+        // Initialize animations after preloader
+        function initHeroAnimations() {
+            if(prefersReducedMotion) return;
+
+            // Nav Animation
+            gsap.from('.gsap-nav-item', {
+                y: -20, opacity: 0, duration: 0.6, stagger: 0.1, ease: 'power2.out'
+            });
+            gsap.from('.gsap-sidenav', {
+                x: 20, opacity: 0, duration: 0.6, delay: 0.5, ease: 'power2.out'
+            });
+
+            // Hero Text & Elements Reveal
+            const tlHero = gsap.timeline();
+            
+            // Word by word title
+            tlHero.to('.word-inner', {
+                y: '0%', duration: 0.8, stagger: 0.1, ease: 'power4.out'
+            })
+            // Subtitle & Buttons
+            .fromTo('.gsap-hero-el', 
+                { y: 30, opacity: 0 }, 
+                { y: 0, opacity: 1, duration: 0.6, stagger: 0.2, ease: 'power2.out' }, 
+                "-=0.4"
+            )
+            // Hero Cards
+            .fromTo('.gsap-hero-card',
+                { y: 50, opacity: 0 },
+                { y: 0, opacity: 1, duration: 0.8, stagger: 0.15, ease: 'power3.out', onComplete: startCounters },
+                "-=0.4"
+            )
+            // Progress Bar specific
+            .to('#progress-bar-hero', {
+                width: '85%', duration: 1.5, ease: 'power2.out'
+            }, "-=0.2");
+        }
+
+        // Count Up Logic
+        function startCounters() {
+            const counters = document.querySelectorAll('.count-up');
+            counters.forEach(counter => {
+                const target = +counter.getAttribute('data-target');
+                let count = 0;
+                const updateCount = () => {
+                    const inc = target / 50; // speed
+                    if (count < target) {
+                        count += inc;
+                        counter.innerText = Math.ceil(count).toLocaleString();
+                        requestAnimationFrame(updateCount);
+                    } else {
+                        counter.innerText = target.toLocaleString();
+                    }
+                };
+                updateCount();
+            });
+        }
+
+        // Scroll Interactions
+        if(!prefersReducedMotion) {
+            // Global Scroll Progress Bar
+            gsap.to('#scroll-progress', {
+                scaleX: 1,
+                ease: 'none',
+                scrollTrigger: {
+                    trigger: document.body,
+                    start: 'top top',
+                    end: 'bottom bottom',
+                    scrub: 0.3
+                }
+            });
+
+            // Navbar shrink/blur on scroll
+            window.addEventListener('scroll', () => {
+                const nav = document.getElementById('navbar');
+                const inner = document.getElementById('navbar-inner');
+                if(window.scrollY > 50) {
+                    nav.classList.add('bg-[#060a15]/90', 'backdrop-blur-xl');
+                    nav.classList.remove('bg-[#0c122299]');
+                    inner.classList.replace('h-20', 'h-16');
+                } else {
+                    nav.classList.add('bg-[#0c122299]');
+                    nav.classList.remove('bg-[#060a15]/90', 'backdrop-blur-xl');
+                    inner.classList.replace('h-16', 'h-20');
+                }
+            });
+
+            // Generic Fade-Up for sections
+            gsap.utils.toArray('.scroll-reveal').forEach(section => {
+                gsap.fromTo(section, 
+                    { y: 50, opacity: 0 },
+                    { 
+                        y: 0, opacity: 1, duration: 0.8, ease: 'power2.out',
+                        scrollTrigger: {
+                            trigger: section,
+                            start: 'top 85%',
+                        }
+                    }
+                );
+            });
+
+            // Title Underline Reveal
+            gsap.utils.toArray('.title-underline-reveal').forEach(title => {
+                ScrollTrigger.create({
+                    trigger: title,
+                    start: 'top 85%',
+                    onEnter: () => title.style.setProperty('--tw-scale-x', '1') // triggering via CSS/pseudo class workaround or inline style
+                });
+                gsap.to(title, {
+                    "--scale": 1,
+                    scrollTrigger: {
+                        trigger: title,
+                        start: 'top 85%',
+                        toggleClass: 'underline-active'
+                    }
+                });
+                // Fix pseudo element animation with GSAP CSSRulePlugin or simple class toggle
+                title.classList.add('reveal-ready');
+            });
+
+            // Staggered Table Rows
+            gsap.utils.toArray('#trazabilidad table').forEach(table => {
+                gsap.fromTo(table.querySelectorAll('.table-row-reveal'),
+                    { x: -20, opacity: 0 },
+                    {
+                        x: 0, opacity: 1, duration: 0.4, stagger: 0.1, ease: 'power1.out',
+                        scrollTrigger: {
+                            trigger: table,
+                            start: 'top 90%'
+                        }
+                    }
+                );
+            });
+
+            // Map Controls fade-in
+            gsap.fromTo('.map-controls', 
+                { opacity: 0, y: -10 },
+                { opacity: 1, y: 0, duration: 0.5, delay: 0.5, 
+                  scrollTrigger: { trigger: '#map', start: 'top 80%' }
+                }
+            );
+
+            // Parallax Orbs
+            gsap.to('.parallax-orb', {
+                yPercent: 30,
+                ease: 'none',
+                scrollTrigger: {
+                    trigger: '#inicio',
+                    start: 'top top',
+                    end: 'bottom top',
+                    scrub: true
+                }
+            });
+        }
+        
+        // Disable tilt on mobile
+        if(window.innerWidth < 768) {
+            const tiltElements = document.querySelectorAll('[data-tilt]');
+            tiltElements.forEach(el => el.removeAttribute('data-tilt'));
+        }
+
+        // Leaflet Map Initialization (Unchanged)
+        document.addEventListener("DOMContentLoaded", function() {
+            var map = L.map('map', {
+                center: [4.7110, -74.0721],
+                zoom: 13,
+                zoomControl: false,
+                attributionControl: false
+            });
+
+            L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                maxZoom: 18,
+            }).addTo(map);
+
+            L.control.zoom({
+                position: 'bottomright'
+            }).addTo(map);
+
+            function mulberry32(a) {
+                return function() {
+                  var t = a += 0x6D2B79F5;
+                  t = Math.imul(t ^ t >>> 15, t | 1);
+                  t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+                  return ((t ^ t >>> 14) >>> 0) / 4294967296;
+                }
+            }
+            
+            var rand = mulberry32(12345);
+            var baseLat = 4.7110;
+            var baseLng = -74.0721;
+            
+            var createCustomIcon = (status) => {
+                const color = status === 'optimal' ? '#34d399' : '#fbbf24';
+                return L.divIcon({
+                    className: 'custom-div-icon',
+                    html: `<div style="background-color: ${color}; width: 12px; height: 12px; border-radius: 50%; border: 2px solid #060a15; box-shadow: 0 0 10px ${color};"></div>`,
+                    iconSize: [12, 12],
+                    iconAnchor: [6, 6]
+                });
+            };
+
+            for(let i=0; i<20; i++) {
+                let latOffset = (rand() - 0.5) * 0.05;
+                let lngOffset = (rand() - 0.5) * 0.05;
+                let status = rand() > 0.8 ? 'warning' : 'optimal';
+                
+                L.marker([baseLat + latOffset, baseLng + lngOffset], {
+                    icon: createCustomIcon(status)
+                }).addTo(map);
+            }
+
+            var latlngs = [
+                [baseLat + 0.01, baseLng - 0.01],
+                [baseLat + 0.02, baseLng - 0.005],
+                [baseLat + 0.015, baseLng + 0.01],
+                [baseLat - 0.005, baseLng + 0.005],
+                [baseLat - 0.01, baseLng - 0.005]
+            ];
+            var polygon = L.polygon(latlngs, {
+                color: '#34d399',
+                fillColor: '#34d399',
+                fillOpacity: 0.1,
+                weight: 2,
+                dashArray: '4'
+            }).addTo(map);
+            
+            document.querySelector('.leaflet-container').style.background = '#060a15';
+        });
+
+        // Add dynamically a class for animated underlines when scrolled into view
+        document.head.insertAdjacentHTML("beforeend", `<style>.underline-active::after { transform: scaleX(1) !important; transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1); }</style>`)
+    </script>
+</body></html>
