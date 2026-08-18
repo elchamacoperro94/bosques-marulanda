@@ -1,7 +1,7 @@
 ﻿{
-  "cleanUrls": true,
   "rewrites": [
     { "source": "/", "destination": "/app/index.html" },
-    { "source": "/(.*)", "destination": "/app/$1" }
+    { "source": "/(css|js|fotos|logos|fonts)/(.+)", "destination": "/app/$1/$2" },
+    { "source": "/(.+\\.(?:html|css|js|png|jpg|jpeg|gif|svg|ico|pdf|kml|woff|woff2|ttf))", "destination": "/app/$1" }
   ]
 }
