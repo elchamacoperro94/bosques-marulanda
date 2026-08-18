@@ -109,6 +109,7 @@ app/
 | **Fase 5** | MEMORIA CENTRAL | Creación de este archivo `CONTEXTO.md` como fuente de verdad permanente para mantener la memoria viva del proyecto. |
 | **Fase 6** | `app/index.html` | Integración de Fotografía Real del Frailejón (*Espeletia grandiflora*) con overlay didáctico de Fábrica de Agua: neblina en precipitación horizontal, gotas de condensación en roseta foliar y filtración hacia mantos acuíferos subterráneos del río Guarinó en Andisoles. |
 | **Fase 7** | Arquitectura / Refactor | **Modularización física completa**: Separación de `app/index.html` (de 2.298 a 907 líneas), creación de `app/css/styles.css` con 8 módulos ordenados, desacoplamiento de JS en 7 archivos independientes en `app/js/` y corrección de los estilos de la tarjeta de Ficha Técnica (`.cifras-grid`). |
+| **Fase 8** | Vercel Deployment | **Configuración de Vercel**: Creación del archivo `vercel.json` en la raíz con regla de reescritura hacia la carpeta `app/` (`/app/$1`) para corregir el error 404 NOT_FOUND en el despliegue de Vercel. |
 
 ---
 
