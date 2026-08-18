@@ -1,6 +1,4 @@
 ﻿{
-  "cleanUrls": true,
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/app/$1" }
-  ]
+  "outputDirectory": "app",
+  "cleanUrls": true
 }
